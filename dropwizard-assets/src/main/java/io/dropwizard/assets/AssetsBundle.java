@@ -2,6 +2,7 @@ package io.dropwizard.assets;
 
 import com.google.common.base.Charsets;
 import io.dropwizard.Bundle;
+import io.dropwizard.jetty.setup.ServletEnvironment;
 import io.dropwizard.servlets.assets.AssetServlet;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -106,7 +107,7 @@ public class AssetsBundle implements Bundle {
     @Override
     public void run(Environment environment) {
         LOGGER.info("Registering AssetBundle with name: {} for path {}", assetsName, uriPath + '*');
-        environment.servlets().addServlet(assetsName, createServlet()).addMapping(uriPath + '*');
+        servlets(environment).addServlet(assetsName, createServlet()).addMapping(uriPath + '*');
     }
 
     public String getResourcePath() {
@@ -124,4 +125,17 @@ public class AssetsBundle implements Bundle {
     protected AssetServlet createServlet() {
         return new AssetServlet(resourcePath, uriPath, indexFile, Charsets.UTF_8);
     }
+    
+    /**
+     * Return the {@link ServletEnvironment} to which the created {@link AssetServlet} will be added
+     * to.
+     * 
+     * @param environment the {@link Environment} this {@link Bundle} is running in
+     * @return the {@link ServletEnvironment} to which the created {@link AssetServlet} will be added
+     *         to
+     */
+    protected ServletEnvironment servlets(Environment environment) {
+      return environment.servlets();
+    }
+    
 }
